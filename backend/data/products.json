@@ -1,0 +1,160 @@
+[
+  {
+    "sku": "AUDIO-ANC-001",
+    "name": "Apex Pro ANC Wireless Headphones",
+    "category": "Audio",
+    "description": "High-fidelity wireless headphones with Active Noise Cancellation (ANC), 35-hour battery life, and crystal-clear microphone.",
+    "price_minor": 449900,
+    "currency": "INR",
+    "inventory_qty": 45,
+    "attributes": {
+      "ANC": true,
+      "battery_hours": 35,
+      "color": "Matte Black",
+      "wireless": true
+    },
+    "upsell_skus": ["ACC-CASE-001", "ACC-CABLE-001"]
+  },
+  {
+    "sku": "ACC-CASE-001",
+    "name": "Hardshell Protective Carrying Case",
+    "category": "Accessories",
+    "description": "Water-resistant hardshell EVA case designed specifically for over-ear ANC headphones.",
+    "price_minor": 39900,
+    "currency": "INR",
+    "inventory_qty": 120,
+    "attributes": {
+      "material": "EVA Hardshell",
+      "water_resistant": true
+    },
+    "upsell_skus": []
+  },
+  {
+    "sku": "ACC-CABLE-001",
+    "name": "Gold-Plated 3.5mm Aux & Charging Bundle",
+    "category": "Accessories",
+    "description": "Braided nylon 3.5mm audio cable paired with a fast-charging Type-C braided cable.",
+    "price_minor": 29900,
+    "currency": "INR",
+    "inventory_qty": 80,
+    "attributes": {
+      "cable_length_m": 1.5,
+      "braided": true
+    },
+    "upsell_skus": []
+  },
+  {
+    "sku": "AUDIO-EAR-002",
+    "name": "SoundBuds True Wireless Earbuds",
+    "category": "Audio",
+    "description": "Compact TWS earbuds featuring low latency gaming mode, IPX5 water resistance, and 24h total playback.",
+    "price_minor": 249900,
+    "currency": "INR",
+    "inventory_qty": 60,
+    "attributes": {
+      "ANC": false,
+      "battery_hours": 24,
+      "water_resistant": true
+    },
+    "upsell_skus": ["ACC-CASE-002"]
+  },
+  {
+    "sku": "ACC-CASE-002",
+    "name": "Silicone Earbud Protective Sleeve with Carabiner",
+    "category": "Accessories",
+    "description": "Shockproof silicone case cover with keychain carabiner clip.",
+    "price_minor": 19900,
+    "currency": "INR",
+    "inventory_qty": 150,
+    "attributes": {
+      "material": "Silicone"
+    },
+    "upsell_skus": []
+  },
+  {
+    "sku": "LAPTOP-DEV-001",
+    "name": "ZenBook Air 14 Lightweight Laptop",
+    "category": "Laptops",
+    "description": "Ultra-thin 14-inch developer laptop with 16GB RAM, 512GB NVMe SSD, and 12th Gen Intel i7 processor.",
+    "price_minor": 6499900,
+    "currency": "INR",
+    "inventory_qty": 15,
+    "attributes": {
+      "ram_gb": 16,
+      "storage_gb": 512,
+      "screen_size_inch": 14.0,
+      "processor": "Intel Core i7"
+    },
+    "upsell_skus": ["ACC-HUB-001", "ACC-MOUSE-001"]
+  },
+  {
+    "sku": "ACC-HUB-001",
+    "name": "7-in-1 USB-C Aluminium Hub",
+    "category": "Accessories",
+    "description": "Multi-port adapter with 4K HDMI, 100W Power Delivery, SD Card Reader, and 3x USB 3.0 ports.",
+    "price_minor": 149900,
+    "currency": "INR",
+    "inventory_qty": 50,
+    "attributes": {
+      "ports": 7,
+      "power_delivery_watts": 100
+    },
+    "upsell_skus": []
+  },
+  {
+    "sku": "ACC-MOUSE-001",
+    "name": "ErgoGrip Wireless Ergonomic Mouse",
+    "category": "Accessories",
+    "description": "Silent-click vertical ergonomic mouse with multi-device Bluetooth connection.",
+    "price_minor": 129900,
+    "currency": "INR",
+    "inventory_qty": 40,
+    "attributes": {
+      "ergonomic": true,
+      "wireless": true
+    },
+    "upsell_skus": []
+  },
+  {
+    "sku": "WEARABLE-SMART-001",
+    "name": "PulseFit Pro Smartwatch",
+    "category": "Wearables",
+    "description": "1.85-inch HD AMOLED smartwatch with SpO2 monitoring, heart rate tracking, and 100+ sports modes.",
+    "price_minor": 329900,
+    "currency": "INR",
+    "inventory_qty": 30,
+    "attributes": {
+      "display": "AMOLED",
+      "waterproof_rating": "IP68"
+    },
+    "upsell_skus": ["ACC-STRAP-001"]
+  },
+  {
+    "sku": "ACC-STRAP-001",
+    "name": "Silicone Strap Variety Pack (3 Colors)",
+    "category": "Accessories",
+    "description": "Soft breathable replacement straps in Black, Navy, and Olive Green.",
+    "price_minor": 49900,
+    "currency": "INR",
+    "inventory_qty": 90,
+    "attributes": {
+      "pack_size": 3
+    },
+    "upsell_skus": []
+  },
+  {
+    "sku": "LAPTOP-MAX-001",
+    "name": "Ultra Precision Workstation Pro",
+    "category": "Laptops",
+    "description": "High-end AI workstation laptop with 64GB DDR5 RAM, 2TB SSD, and NVIDIA RTX 4080 GPU.",
+    "price_minor": 14999900,
+    "currency": "INR",
+    "inventory_qty": 5,
+    "attributes": {
+      "ram_gb": 64,
+      "storage_gb": 2048,
+      "gpu": "NVIDIA RTX 4080"
+    },
+    "upsell_skus": []
+  }
+]

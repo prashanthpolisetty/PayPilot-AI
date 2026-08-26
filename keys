@@ -1,0 +1,4 @@
+API_KEY : rzp_test_TSF2aLs0qkWNQy
+Secreat : vZY12hmR64EXQ4RGUsJ639TZ
+backend : python main.py
+frontend : cd frontend npm run dev
