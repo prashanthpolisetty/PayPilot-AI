@@ -42,6 +42,21 @@ export default function Navbar({ razorpayKeyId, policyMaxLimit, activeTab, setAc
         >
           📈 Merchant Growth Telemetry
         </button>
+        <button
+          onClick={() => setActiveTab('admin')}
+          style={{
+            background: activeTab === 'admin' ? 'var(--accent-cyan)' : 'transparent',
+            color: activeTab === 'admin' ? '#000' : 'var(--text-secondary)',
+            border: '1px solid var(--border-color)',
+            padding: '0.45rem 0.9rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: '600',
+            fontSize: '0.85rem'
+          }}
+        >
+          ⚙️ Merchant Admin
+        </button>
       </div>
 
       <div className="nav-metrics">

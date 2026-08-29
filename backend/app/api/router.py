@@ -8,9 +8,20 @@ from app.services.policy_engine import PolicyEngine
 from app.services.razorpay_adapter import razorpay_adapter
 from app.services.audit_service import AuditService
 from app.agents.runner import AgentRunner
-from app.db.models import Order, Payment, Approval, Product, Cart, CartItem
+from app.api.auth import router as auth_router
+from app.db.models import Order, Payment, Approval, Product, Cart, CartItem, MerchantConfig, Coupon, UserPreference
 
 router = APIRouter(prefix="/api/v1")
+router.include_router(auth_router)
+
+@router.get("/config/public")
+def get_public_config():
+    from app.core.config import settings
+    return {
+        "razorpay_key_id": settings.RAZORPAY_KEY_ID,
+        "policy_max_limit_rupees": settings.MAX_TRANSACTION_LIMIT_PAISE / 100.0,
+        "llm_provider": settings.LLM_PROVIDER
+    }
 
 # Chat / Agent Endpoint
 @router.post("/chat")
@@ -439,4 +450,70 @@ def get_agent_run(run_id: str, db: Session = Depends(get_db)):
             } for a in actions
         ]
     }
+
+# Merchant Admin Endpoints
+@router.get("/merchant/config/{merchant_id}")
+def get_merchant_config(merchant_id: str, db: Session = Depends(get_db)):
+    config = db.query(MerchantConfig).filter_by(merchant_id=merchant_id).first()
+    if not config:
+        config = MerchantConfig(merchant_id=merchant_id)
+        db.add(config)
+        db.commit()
+        db.refresh(config)
+    return {
+        "merchant_id": config.merchant_id,
+        "max_transaction_limit_rupees": config.max_transaction_limit_paise / 100.0,
+        "max_daily_spend_rupees": config.max_daily_spend_paise / 100.0,
+        "max_quantity_per_item": config.max_quantity_per_item,
+        "require_passkey_above_rupees": config.require_passkey_above_paise / 100.0,
+        "risk_scoring_enabled": config.risk_scoring_enabled
+    }
+
+@router.put("/merchant/config/{merchant_id}")
+def update_merchant_config(merchant_id: str, payload: Dict[str, Any] = Body(...), db: Session = Depends(get_db)):
+    config = db.query(MerchantConfig).filter_by(merchant_id=merchant_id).first()
+    if not config:
+        config = MerchantConfig(merchant_id=merchant_id)
+        db.add(config)
+
+    if "max_transaction_limit_rupees" in payload:
+        config.max_transaction_limit_paise = int(payload["max_transaction_limit_rupees"] * 100)
+    if "max_daily_spend_rupees" in payload:
+        config.max_daily_spend_paise = int(payload["max_daily_spend_rupees"] * 100)
+    if "max_quantity_per_item" in payload:
+        config.max_quantity_per_item = int(payload["max_quantity_per_item"])
+    if "risk_scoring_enabled" in payload:
+        config.risk_scoring_enabled = bool(payload["risk_scoring_enabled"])
+
+    db.commit()
+    return {"status": "SUCCESS", "message": "Merchant policy configuration updated successfully"}
+
+@router.get("/merchant/coupons/{merchant_id}")
+def list_merchant_coupons(merchant_id: str, db: Session = Depends(get_db)):
+    coupons = db.query(Coupon).filter_by(merchant_id=merchant_id).all()
+    return [
+        {
+            "id": c.id,
+            "code": c.code,
+            "discount_type": c.discount_type,
+            "discount_value": c.discount_value,
+            "min_cart_rupees": c.min_cart_minor / 100.0,
+            "active": c.active
+        } for c in coupons
+    ]
+
+@router.post("/merchant/coupons")
+def create_merchant_coupon(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_db)):
+    coupon = Coupon(
+        merchant_id=payload.get("merchant_id", "merchant_demo_001"),
+        code=payload["code"].strip().upper(),
+        discount_type=payload.get("discount_type", "PERCENTAGE"),
+        discount_value=int(payload["discount_value"]),
+        min_cart_minor=int(payload.get("min_cart_rupees", 0) * 100),
+        active=True
+    )
+    db.add(coupon)
+    db.commit()
+    db.refresh(coupon)
+    return {"status": "SUCCESS", "coupon_id": coupon.id, "code": coupon.code}
 

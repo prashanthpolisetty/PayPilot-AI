@@ -1,12 +1,13 @@
 import json
 from typing import Dict, Any, Optional
 from sqlalchemy.orm import Session
-from app.db.models import Approval, Cart, Order, Payment
+from app.db.models import Approval, Cart, Order, Payment, Coupon
 from app.services.catalog_service import CatalogService
 from app.services.cart_service import CartService
 from app.services.policy_engine import PolicyEngine
 from app.services.razorpay_adapter import razorpay_adapter
 from app.services.audit_service import AuditService
+from app.services.vector_service import VectorCatalogService
 
 # Declarations of tool schemas for Gemini and Groq
 TOOL_SCHEMAS = [
@@ -143,6 +144,18 @@ TOOL_SCHEMAS = [
             },
             "required": ["order_id"]
         }
+    },
+    {
+        "name": "apply_coupon_code",
+        "description": "Apply a valid promotional discount code to a cart.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "cart_id": {"type": "string"},
+                "coupon_code": {"type": "string", "description": "The coupon code e.g. 'SAVE10'"}
+            },
+            "required": ["cart_id", "coupon_code"]
+        }
     }
 ]
 
@@ -163,7 +176,7 @@ class AgentToolExecutor:
                     attributes=tool_args.get("attributes")
                 )
 
-                # Return clean JSON summary
+                # Return clean JSON summary with vector similarity ranking
                 results = []
                 for p in products:
                     upsell_items = CatalogService.get_upsells(db, p.id)
@@ -179,6 +192,9 @@ class AgentToolExecutor:
                         "available_upsells": [{"id": u.id, "name": u.name, "price_rupees": u.price_minor/100.0} for u in upsell_items]
                     })
                 
+                if tool_args.get("query"):
+                    results = VectorCatalogService.rank_products_by_similarity(tool_args["query"], results)
+
                 AuditService.write_audit_event(
                     db, "AGENT", user_id, "SEARCH_PRODUCTS", "PRODUCT", "CATALOG",
                     reason=f"Searched catalog query='{tool_args.get('query')}'", metadata_json=tool_args
@@ -392,6 +408,50 @@ class AgentToolExecutor:
                         "Modify cart items / quantities",
                         "Cancel order cleanly without money deduction"
                     ]
+                }
+
+            elif tool_name == "apply_coupon_code":
+                cart_id = tool_args["cart_id"]
+                code = tool_args["coupon_code"].strip().upper()
+                cart = CartService.get_cart(db, cart_id)
+                if not cart:
+                    return {"status": "ERROR", "error": "Cart not found"}
+
+                coupon = db.query(Coupon).filter_by(code=code, active=True).first()
+                if not coupon:
+                    return {"status": "INVALID_COUPON", "error": f"Coupon code '{code}' is invalid or expired."}
+
+                if cart.total_minor < coupon.min_cart_minor:
+                    return {
+                        "status": "MINIMUM_NOT_MET",
+                        "error": f"Coupon requires minimum cart value of INR {coupon.min_cart_minor/100:.2f}"
+                    }
+
+                discount_minor = 0
+                if coupon.discount_type == "PERCENTAGE":
+                    discount_minor = int(cart.total_minor * (coupon.discount_value / 100.0))
+                    if coupon.max_discount_minor:
+                        discount_minor = min(discount_minor, coupon.max_discount_minor)
+                else:
+                    discount_minor = coupon.discount_value
+
+                cart.total_minor = max(0, cart.total_minor - discount_minor)
+                cart.version += 1
+                db.commit()
+
+                AuditService.write_audit_event(
+                    db, "AGENT", user_id, "APPLY_COUPON", "CART", cart.id,
+                    reason=f"Applied coupon '{code}' for discount INR {discount_minor/100:.2f}",
+                    metadata_json={"coupon_code": code, "discount_rupees": discount_minor / 100.0}
+                )
+
+                return {
+                    "status": "SUCCESS",
+                    "cart_id": cart.id,
+                    "coupon_code": code,
+                    "discount_rupees": discount_minor / 100.0,
+                    "new_total_rupees": cart.total_minor / 100.0,
+                    "version": cart.version
                 }
 
             else:

@@ -18,6 +18,8 @@ class User(Base):
     external_ref = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
     email = Column(String, nullable=True)
+    hashed_password = Column(String, nullable=True)
+    role = Column(String, default="BUYER")  # BUYER, MERCHANT, ADMIN
     created_at = Column(DateTime, default=utc_now)
 
 class Merchant(Base):
@@ -25,8 +27,45 @@ class Merchant(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     name = Column(String, nullable=False)
+    email = Column(String, nullable=True)
+    hashed_password = Column(String, nullable=True)
     status = Column(String, default="ACTIVE")
     created_at = Column(DateTime, default=utc_now)
+
+class UserPreference(Base):
+    __tablename__ = "user_preferences"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True)
+    preferred_categories = Column(JSON, nullable=True)  # e.g. ["Audio", "Laptops"]
+    preferred_brands = Column(JSON, nullable=True)
+    max_budget_preference_minor = Column(Integer, nullable=True)
+    attributes_preference_json = Column(JSON, nullable=True)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
+
+class MerchantConfig(Base):
+    __tablename__ = "merchant_configs"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    merchant_id = Column(String, ForeignKey("merchants.id"), nullable=False, unique=True)
+    max_transaction_limit_paise = Column(Integer, default=10000000)  # Default ₹1,00,000
+    max_daily_spend_paise = Column(Integer, default=20000000)        # Default ₹2,00,000
+    max_quantity_per_item = Column(Integer, default=5)
+    require_passkey_above_paise = Column(Integer, default=5000000)   # Default ₹50,000
+    risk_scoring_enabled = Column(Boolean, default=True)
+
+class Coupon(Base):
+    __tablename__ = "coupons"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    merchant_id = Column(String, ForeignKey("merchants.id"), nullable=False)
+    code = Column(String, nullable=False, unique=True)
+    discount_type = Column(String, default="PERCENTAGE")  # PERCENTAGE or FLAT
+    discount_value = Column(Integer, nullable=False)  # e.g. 10 for 10% or 50000 for ₹500
+    max_discount_minor = Column(Integer, nullable=True)
+    min_cart_minor = Column(Integer, default=0)
+    active = Column(Boolean, default=True)
+    expires_at = Column(DateTime, nullable=True)
 
 class Product(Base):
     __tablename__ = "products"

@@ -21,6 +21,18 @@ def seed_database():
             db.refresh(merchant)
             print(f"[Seed] Created Merchant: {merchant.name} ({merchant.id})")
 
+        # Seed MerchantConfig if not exists or reset to default ₹1,00,000
+        from app.db.models import MerchantConfig
+        m_cfg = db.query(MerchantConfig).filter_by(merchant_id=merchant.id).first()
+        if not m_cfg:
+            m_cfg = MerchantConfig(merchant_id=merchant.id, max_transaction_limit_paise=10000000, max_daily_spend_paise=20000000)
+            db.add(m_cfg)
+            db.commit()
+        else:
+            m_cfg.max_transaction_limit_paise = 10000000
+            m_cfg.max_daily_spend_paise = 20000000
+            db.commit()
+
         # Seed User if not exists
         user = db.query(User).filter_by(external_ref="user_demo_001").first()
         if not user:

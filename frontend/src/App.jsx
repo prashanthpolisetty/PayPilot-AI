@@ -4,6 +4,7 @@ import ChatWindow from './components/ChatWindow';
 import Sidebar from './components/Sidebar';
 import ApprovalModal from './components/ApprovalModal';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
+import MerchantAdmin from './components/MerchantAdmin';
 
 const API_BASE = '/api/v1';
 
@@ -21,9 +22,17 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [isApprovalOpen, setIsApprovalOpen] = useState(false);
   const [currentCartId, setCurrentCartId] = useState(null);
+  const [publicConfig, setPublicConfig] = useState({ razorpay_key_id: 'rzp_test_TSq1Wj6MH9K4Fd', policy_max_limit_rupees: 100000 });
 
   // Initial cart creation and audit trail fetch
   useEffect(() => {
+    fetch(`${API_BASE}/config/public`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.razorpay_key_id) setPublicConfig(data);
+      })
+      .catch(() => {});
+
     fetch(`${API_BASE}/carts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -163,7 +172,7 @@ export default function App() {
       // 3. Launch Razorpay Standard Checkout SDK if available
       if (window.Razorpay && orderData.razorpay_order_id && !orderData.razorpay_order_id.startsWith('order_test_')) {
         const options = {
-          key: 'rzp_test_TSF2aLs0qkWNQy',
+          key: publicConfig.razorpay_key_id,
           amount: Math.round(orderData.amount_rupees * 100),
           currency: orderData.currency || 'INR',
           name: 'Razorpay Agentic Commerce',
@@ -238,8 +247,8 @@ export default function App() {
   return (
     <div className="app-container">
       <Navbar
-        razorpayKeyId="rzp_test_TSF2aLs0qkWNQy"
-        policyMaxLimit="1,00,000"
+        razorpayKeyId={publicConfig.razorpay_key_id}
+        policyMaxLimit={publicConfig.policy_max_limit_rupees ? publicConfig.policy_max_limit_rupees.toLocaleString('en-IN') : "1,00,000"}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
@@ -256,8 +265,10 @@ export default function App() {
               onRemoveItem={handleRemoveItem}
             />
           </>
-        ) : (
+        ) : activeTab === 'analytics' ? (
           <AnalyticsDashboard />
+        ) : (
+          <MerchantAdmin />
         )}
       </main>
       <ApprovalModal

@@ -1,7 +1,8 @@
 from typing import Dict, Any, List
 from sqlalchemy.orm import Session
 from app.core.config import settings
-from app.db.models import Cart, CartItem, Product, Approval, Order
+from app.db.models import Cart, CartItem, Product, Approval, Order, MerchantConfig
+from app.services.risk_service import RiskService
 
 class PolicyCheckResult:
     def __init__(self, allowed: bool, reason_codes: List[str], details: Dict[str, Any]):
@@ -31,6 +32,12 @@ class PolicyEngine:
         if not items:
             return PolicyCheckResult(False, ["CART_EMPTY"], {"error": "Cart is empty"})
 
+        # Load dynamic merchant configuration if available
+        merchant_config = db.query(MerchantConfig).filter_by(merchant_id=cart.merchant_id).first()
+        max_tx_paise = merchant_config.max_transaction_limit_paise if merchant_config else settings.MAX_TRANSACTION_LIMIT_PAISE
+        max_daily_paise = merchant_config.max_daily_spend_paise if merchant_config else settings.MAX_DAILY_SPEND_PAISE
+        max_qty_item = merchant_config.max_quantity_per_item if merchant_config else settings.MAX_QUANTITY_PER_ITEM
+
         # Check 1: Server-side total calculation revalidation
         computed_total_minor = sum(item.line_total_minor for item in items)
         if computed_total_minor != cart.total_minor:
@@ -40,8 +47,7 @@ class PolicyEngine:
         details["cart_total_rupees"] = cart.total_minor / 100.0
         details["currency"] = cart.currency
 
-        # Check 2: Max transaction limit check (₹10,000 / 1,000,000 paise)
-        max_tx_paise = settings.MAX_TRANSACTION_LIMIT_PAISE
+        # Check 2: Max transaction limit check
         if cart.total_minor > max_tx_paise:
             allowed = False
             reason_codes.append("EXCEEDS_MAX_TRANSACTION_LIMIT")
@@ -50,10 +56,10 @@ class PolicyEngine:
 
         # Check 3: Max item quantity check
         for item in items:
-            if item.quantity > settings.MAX_QUANTITY_PER_ITEM:
+            if item.quantity > max_qty_item:
                 allowed = False
                 reason_codes.append("EXCEEDS_MAX_ITEM_QUANTITY")
-                details["max_quantity_per_item"] = settings.MAX_QUANTITY_PER_ITEM
+                details["max_quantity_per_item"] = max_qty_item
 
         # Check 4: Stock availability and price revalidation
         for item in items:
@@ -74,7 +80,6 @@ class PolicyEngine:
         import datetime
         now_utc = datetime.datetime.now(datetime.timezone.utc)
         start_of_today = now_utc.replace(hour=0, minute=0, second=0, microsecond=0)
-        # Compatible with naive or timezone-aware datetimes stored in sqlite
         start_of_today_naive = start_of_today.replace(tzinfo=None)
         
         paid_orders = db.query(Order).filter(
@@ -83,11 +88,18 @@ class PolicyEngine:
             Order.created_at >= start_of_today_naive
         ).all()
         daily_spent_minor = sum(o.total_minor for o in paid_orders)
-        if (daily_spent_minor + cart.total_minor) > settings.MAX_DAILY_SPEND_PAISE:
+        if (daily_spent_minor + cart.total_minor) > max_daily_paise:
             allowed = False
             reason_codes.append("EXCEEDS_MAX_DAILY_SPEND_LIMIT")
             details["daily_spent_rupees"] = daily_spent_minor / 100.0
-            details["max_daily_spend_rupees"] = settings.MAX_DAILY_SPEND_PAISE / 100.0
+            details["max_daily_spend_rupees"] = max_daily_paise / 100.0
+
+        # Check 6: Fraud Risk Scoring
+        risk_res = RiskService.evaluate_cart_risk(db, cart_id, user_id)
+        details["risk_assessment"] = risk_res.to_dict()
+        if risk_res.risk_level == "CRITICAL":
+            allowed = False
+            reason_codes.append("BLOCKED_BY_RISK_ENGINE")
 
         if allowed:
             reason_codes.append("POLICY_PASSED")

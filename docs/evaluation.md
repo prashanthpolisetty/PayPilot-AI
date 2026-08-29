@@ -7,16 +7,16 @@
 
 | ID | Category | Scenario Description | Status | Details |
 | :--- | :--- | :--- | :--- | :--- |
-| `SCN-01` | **Intent Extraction** | Process: 'ANC headphones under 5000' | PASSED | Actions: 10 |
-| `SCN-02` | **Intent Extraction** | Process: 'Developer workstation laptop under 70,000' | PASSED | Actions: 9 |
+| `SCN-01` | **Intent Extraction** | Process: 'ANC headphones under 5000' | PASSED | Actions: 9 |
+| `SCN-02` | **Intent Extraction** | Process: 'Developer workstation laptop under 70,000' | PASSED | Actions: 5 |
 | `SCN-03` | **Intent Extraction** | Process: 'Wireless earbuds budget 3000' | PASSED | Actions: 9 |
 | `SCN-04` | **Intent Extraction** | Process: 'Fitness tracker under 4000' | PASSED | Actions: 9 |
-| `SCN-05` | **Intent Extraction** | Process: 'Noise cancelling audio within 6000' | PASSED | Actions: 10 |
-| `SCN-06` | **Intent Extraction** | Process: 'Gaming notebook max 80,000' | PASSED | Actions: 9 |
-| `SCN-07` | **Intent Extraction** | Process: 'Laptop accessories under 2000' | PASSED | Actions: 9 |
-| `SCN-08` | **Intent Extraction** | Process: 'Headset below 4500' | PASSED | Actions: 9 |
-| `SCN-09` | **Intent Extraction** | Process: 'Ultrabook under 65,000' | PASSED | Actions: 10 |
-| `SCN-10` | **Intent Extraction** | Process: 'Smartwatch within 5000' | PASSED | Actions: 9 |
+| `SCN-05` | **Intent Extraction** | Process: 'Noise cancelling audio within 6000' | PASSED | Actions: 5 |
+| `SCN-06` | **Intent Extraction** | Process: 'Gaming notebook max 80,000' | PASSED | Actions: 5 |
+| `SCN-07` | **Intent Extraction** | Process: 'Laptop accessories under 2000' | PASSED | Actions: 5 |
+| `SCN-08` | **Intent Extraction** | Process: 'Headset below 4500' | PASSED | Actions: 5 |
+| `SCN-09` | **Intent Extraction** | Process: 'Ultrabook under 65,000' | PASSED | Actions: 6 |
+| `SCN-10` | **Intent Extraction** | Process: 'Smartwatch within 5000' | PASSED | Actions: 5 |
 | `SCN-11` | **Policy Caps** | Block single item exceeding ₹1,00,000 cap | PASSED |  |
 | `SCN-12` | **Policy Caps** | Enforce max quantity per item limit <= 5 (Attempted: 6) | PASSED |  |
 | `SCN-13` | **Policy Caps** | Enforce max quantity per item limit <= 5 (Attempted: 6) | PASSED |  |

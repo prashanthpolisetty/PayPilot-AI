@@ -40,9 +40,17 @@ build/
 .DS_Store
 Thumbs.db
 
-# Environment files
+# Environment & Secret files
 .env
+*.env
+keys
 keys/
+keys.txt
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
 
 # Logs
 *.log
