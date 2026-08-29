@@ -170,20 +170,6 @@ Run the automated 50+ scenario evaluation suite:
 python backend/evaluation/test_evaluation_matrix.py
 ```
 
-### 📊 Benchmark Benchmark Results: **52 / 52 Scenarios Passed (100.0% Pass Rate)**
-
-| Category | Evaluated Scenarios | Pass Rate |
-| :--- | :-: | :-: |
-| **Intent Extraction & Constraint Parsing** | 10 / 10 | 100% |
-| **Policy Engine Caps & Bounds** | 10 / 10 | 100% |
-| **Approval Gate Verification** | 10 / 10 | 100% |
-| **Payment Signature & Webhook Idempotency** | 8 / 8 | 100% |
-| **Failure Recovery & Resilience** | 6 / 6 | 100% |
-| **Security & Prompt Injection Defense** | 6 / 6 | 100% |
-
-*See full test breakdown in [`docs/evaluation.md`](file:///c:/Users/polis/Desktop/Razorpay/docs/evaluation.md).*
-
----
 
 ## 📁 Repository Structure
 
