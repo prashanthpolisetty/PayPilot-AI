@@ -62,7 +62,11 @@ export default function Navbar({ razorpayKeyId, policyMaxLimit, activeTab, setAc
       <div className="nav-metrics">
         <div className="metric-pill">
           <span>Key ID:</span>
-          <strong>{razorpayKeyId || 'rzp_test_TSF2...'}</strong>
+          <strong>
+            {razorpayKeyId && razorpayKeyId.length > 14
+              ? `${razorpayKeyId.slice(0, 14)}...`
+              : razorpayKeyId || 'rzp_test_...'}
+          </strong>
         </div>
         <div className="metric-pill">
           <span>Policy Cap:</span>
