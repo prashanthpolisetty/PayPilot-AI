@@ -1,4 +1,11 @@
-# ⚡ Razorpay AI Growth & Agentic Commerce (Track 01)
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)
+![Razorpay](https://img.shields.io/badge/Payment-Razorpay-blue)
+![Gemini](https://img.shields.io/badge/AI-Gemini-orange)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)
+![License](https://img.shields.io/badge/License-MIT-green)# ⚡ Razorpay AI Growth & Agentic Commerce (Track 01)
 
 > **Built for the Razorpay Buildathon — Track 01: AI Growth & Agentic Commerce**  
 > *"Every money action explainable, bounded, and gated."*
