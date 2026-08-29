@@ -52,5 +52,9 @@ keys.txt
 *.sqlite
 *.sqlite3
 
+# PDF Files
+*.pdf
+generate_video_script_pdf.py
+
 # Logs
 *.log
