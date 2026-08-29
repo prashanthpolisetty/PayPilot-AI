@@ -220,18 +220,7 @@ python backend/evaluation/test_evaluation_matrix.py
 
 ---
 
-## 🎬 5-Minute Video Demonstration Plan
 
-| Timestamp | Screen / Visual Focus | Core Message & Narrative |
-| :--- | :--- | :--- |
-| **0:00 - 0:45** | **Problem & System Vision** | *"Autonomous AI agents need guardrails. Every money action is explainable, bounded, and gated."* |
-| **0:45 - 1:45** | **Conversational Discovery** | User prompt: *"I need ANC wireless headphones under INR 5,000"*. Intent extraction & vector RAG search. |
-| **1:45 - 2:30** | **Upsell & Policy Check** | Contextual Carrying Case add-on (+INR 399) & ₹1,00,000 Policy Cap verification. |
-| **2:30 - 3:30** | **Approval Gate & Razorpay Checkout** | Pre-payment summary modal, explicit user approval, Razorpay test order & server HMAC verification. |
-| **3:30 - 4:15** | **Graceful Failure Recovery** | Controlled bank decline simulation, cart preservation, and alternate UPI recovery recommendation. |
-| **4:15 - 5:00** | **Growth Telemetry & Governance** | Review **Merchant Growth Telemetry** (+34.2% uplift) and **Merchant Admin** policy control tabs. |
-
----
 
 ## 🔒 Security & Prompt Injection Defense
 
